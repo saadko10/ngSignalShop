@@ -15,14 +15,14 @@ import {CommonModule} from "@angular/common";
   template: `
     <div class="cart">
       <h2>Shopping Cart</h2>
-      <ng-container *ngIf="cartItems.length; else emptyCart">
+      <ng-container *ngIf="cartState.items().length; else emptyCart">
         <app-cart-item
-          *ngFor="let item of cartItems"
+          *ngFor="let item of cartState.items()"
           [item]="item"
           (quantityChange)="onQuantityChange($event)"
           (remove)="onRemoveItem($event)">
         </app-cart-item>
-        <div class="total">Total: {{ cartTotal }}</div>
+        <div class="total">Total: {{ cartState.total() }}</div>
       </ng-container>
       <ng-template #emptyCart>
         <p>Your cart is empty</p>
@@ -31,28 +31,9 @@ import {CommonModule} from "@angular/common";
   `,
   styleUrl: './shopping-cart.component.css'
 })
-export class ShoppingCartComponent implements OnInit, OnDestroy {
-  cartItems: CartItem[] = [];
-  cartTotal: number = 0;
-  private subscriptions = new Subscription();
-
-  constructor(private cartState: CartState) {}
-
-  ngOnInit(): void {
-    // Subscribe to cart items updates
-    this.subscriptions.add(
-      this.cartState.items$.subscribe(items => {
-        this.cartItems = items;
-      })
-    );
-
-    // Subscribe to cart total updates
-    this.subscriptions.add(
-      this.cartState.total$.subscribe(total => {
-        this.cartTotal = total;
-      })
-    );
-  }
+export class ShoppingCartComponent {
+  // Injection du service
+  constructor(public cartState: CartState) {}
 
   onQuantityChange(event: { id: number, quantity: number }): void {
     this.cartState.updateQuantity(event.id, event.quantity);
@@ -60,9 +41,5 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
 
   onRemoveItem(itemId: number): void {
     this.cartState.removeItem(itemId);
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 }

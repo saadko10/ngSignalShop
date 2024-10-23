@@ -1,53 +1,61 @@
-import { BehaviorSubject, Observable } from 'rxjs';
-import { Injectable } from '@angular/core';
+import { Injectable, computed, signal } from '@angular/core';
 import { CartItem } from '../models/cart-item.model';
-import { map } from 'rxjs/operators';
-import {Product} from "../models/product.model";
+import { Product } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartState {
-  // BehaviorSubject to hold cart items state
-  private cartItems$ = new BehaviorSubject<CartItem[]>([]);
+  // Remplacer BehaviorSubject par un signal
+  private cartItems = signal<CartItem[]>([]);
 
-  // Observable for components to subscribe to cart updates
-  readonly items$ = this.cartItems$.asObservable();
+  // Exposer un signal en lecture seule pour les composants
+  readonly items = this.cartItems.asReadonly();
 
-  // Computed observable for cart total
-  readonly total$ = this.items$.pipe(
-    map(items => items.reduce((sum, item) => sum + item.price * item.quantity, 0))
-  );
+  // Remplacer l'observable total$ par un signal calculé
+  readonly total = computed(() => {
+    return this.items().reduce((sum, item) =>
+      sum + item.price * item.quantity, 0
+    );
+  });
 
   // Method to add item to cart
   addToCart(product: Product): void {
-    const currentItems = this.cartItems$.value;
+    const currentItems = this.items();
     const existingItem = currentItems.find(item => item.id === product.id);
 
     if (existingItem) {
-      const updatedItems = currentItems.map(item =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
+      // Mise à jour avec mutation via update
+      this.cartItems.update(items =>
+        items.map(item =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
       );
-      this.cartItems$.next(updatedItems);
     } else {
-      this.cartItems$.next([...currentItems, { ...product, quantity: 1 }]);
+      // Ajout avec mutation via update
+      this.cartItems.update(items =>
+        [...items, { ...product, quantity: 1 }]
+      );
     }
   }
 
-  // Method to update item quantity
+  // Méthode pour mettre à jour la quantité
   updateQuantity(itemId: number, quantity: number): void {
-    const currentItems = this.cartItems$.value;
-    const updatedItems = currentItems.map(item =>
-      item.id === itemId ? { ...item, quantity } : item
+    this.cartItems.update(items =>
+      items.map(item =>
+        item.id === itemId
+          ? { ...item, quantity }
+          : item
+      )
     );
-    this.cartItems$.next(updatedItems);
   }
 
-  // Method to remove item from cart
+  // Méthode pour supprimer un article
   removeItem(itemId: number): void {
-    const filteredItems = this.cartItems$.value.filter(item => item.id !== itemId);
-    this.cartItems$.next(filteredItems);
+    this.cartItems.update(items =>
+      items.filter(item => item.id !== itemId)
+    );
   }
 }
