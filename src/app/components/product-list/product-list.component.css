@@ -1,0 +1,9 @@
+.products {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+}
+.product-card {
+  border: 1px solid #ddd;
+  padding: 1rem;
+}

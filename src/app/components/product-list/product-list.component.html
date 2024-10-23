@@ -1,0 +1,13 @@
+<div class="products">
+  <!-- Two-way binding example for product filtering -->
+  <input [(ngModel)]="searchTerm"
+         placeholder="Search products..."
+         (ngModelChange)="filterProducts()">
+
+  <div *ngFor="let product of filteredProducts" class="product-card">
+    <h3>{{ product.name }}</h3>
+    <p>Price: ${{ product.price }}</p>
+    <!-- Event binding with @Output -->
+    <button (click)="onAddToCart(product)">Add to Cart</button>
+  </div>
+</div>
