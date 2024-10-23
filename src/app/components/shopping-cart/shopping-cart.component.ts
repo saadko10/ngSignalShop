@@ -3,14 +3,32 @@ import {CartItem} from "../../models/cart-item.model";
 import {Subscription} from "rxjs";
 import {CartState} from "../../services/cart.state";
 import {CartItemComponent} from "../cart-item/cart-item.component";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-shopping-cart',
   standalone: true,
   imports: [
-    CartItemComponent
+    CartItemComponent,
+    CommonModule
   ],
-  templateUrl: './shopping-cart.component.html',
+  template: `
+    <div class="cart">
+      <h2>Shopping Cart</h2>
+      <ng-container *ngIf="cartItems.length; else emptyCart">
+        <app-cart-item
+          *ngFor="let item of cartItems"
+          [item]="item"
+          (quantityChange)="onQuantityChange($event)"
+          (remove)="onRemoveItem($event)">
+        </app-cart-item>
+        <div class="total">Total: {{ cartTotal }}</div>
+      </ng-container>
+      <ng-template #emptyCart>
+        <p>Your cart is empty</p>
+      </ng-template>
+    </div>
+  `,
   styleUrl: './shopping-cart.component.css'
 })
 export class ShoppingCartComponent implements OnInit, OnDestroy {

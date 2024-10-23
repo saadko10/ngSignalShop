@@ -1,14 +1,30 @@
 import {Component, EventEmitter, Output} from '@angular/core';
 import {Product} from "../../models/product.model";
 import {FormsModule} from "@angular/forms";
+import {CommonModule} from "@angular/common";
 
 @Component({
   selector: 'app-product-list',
   standalone: true,
   imports: [
-    FormsModule
+    FormsModule,
+    CommonModule
   ],
-  templateUrl: './product-list.component.html',
+  template: `
+    <div class="products">
+      <!-- Two-way binding example for product filtering -->
+      <input [(ngModel)]="searchTerm"
+             placeholder="Search products..."
+             (ngModelChange)="filterProducts()">
+
+      <div *ngFor="let product of filteredProducts" class="product-card">
+        <h3>{{ product.name }}</h3>
+        <p>Price: {{ product.price }}</p>
+        <!-- Event binding with @Output -->
+        <button (click)="onAddToCart(product)">Add to Cart</button>
+      </div>
+    </div>
+  `,
   styleUrl: './product-list.component.css'
 })
 export class ProductListComponent {

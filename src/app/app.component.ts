@@ -9,7 +9,16 @@ import {ShoppingCartComponent} from "./components/shopping-cart/shopping-cart.co
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, ProductListComponent, ShoppingCartComponent],
-  templateUrl: './app.component.html',
+  template: `
+    <div class="container">
+      <h1>Online Store</h1>
+      <div class="layout">
+        <app-product-list
+          (addToCart)="onAddToCart($event)">
+        </app-product-list>
+        <app-shopping-cart></app-shopping-cart>
+      </div>
+    </div>`,
   styleUrl: './app.component.css'
 })
 export class AppComponent {
