@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Output} from '@angular/core';
+import {Component, computed, EventEmitter, input, Output, signal} from '@angular/core';
 import {Product} from "../../models/product.model";
 import {FormsModule} from "@angular/forms";
 import {CommonModule} from "@angular/common";
@@ -13,11 +13,11 @@ import {CommonModule} from "@angular/common";
   template: `
     <div class="products">
       <!-- Two-way binding example for product filtering -->
-      <input [(ngModel)]="searchTerm"
+      <input [ngModel]="searchTerm()"
              placeholder="Search products..."
-             (ngModelChange)="filterProducts()">
+             (ngModelChange)="updateSearch($event)">
 
-      <div *ngFor="let product of filteredProducts" class="product-card">
+      <div *ngFor="let product of filteredProducts()" class="product-card">
         <h3>{{ product.name }}</h3>
         <p>Price: {{ product.price }}</p>
         <!-- Event binding with @Output -->
@@ -29,17 +29,16 @@ import {CommonModule} from "@angular/common";
 })
 export class ProductListComponent {
   // Available products
-  products: Product[] = [
-    { id: 1, name: 'Laptop', price: 999 },
+  // Signal input pour la liste des produits
+  products = input<Product[]>([
+    { id: 1, name: 'Ordinateur Portable', price: 999 },
     { id: 2, name: 'Smartphone', price: 699 },
-    { id: 3, name: 'Headphones', price: 199 }
-  ];
+    { id: 3, name: 'Écouteurs', price: 199 }
+  ]);
 
-  // Filtered products array
-  filteredProducts: Product[] = this.products;
 
-  // NgModel for search input
-  searchTerm: string = '';
+  // Signal pour le terme de recherche
+  protected searchTerm = signal('');
 
   // Output event emitter for cart additions
   @Output() addToCart = new EventEmitter<Product>();
@@ -47,10 +46,13 @@ export class ProductListComponent {
   onAddToCart(product: Product): void {
     this.addToCart.emit(product);
   }
-
-  filterProducts(): void {
-    this.filteredProducts = this.products.filter(product =>
-      product.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+  protected filteredProducts = computed(() => {
+    const searchTerm = this.searchTerm().toLowerCase();
+    return this.products().filter(product =>
+      product.name.toLowerCase().includes(searchTerm)
     );
+  });
+  updateSearch(term: string): void {
+    this.searchTerm.set(term);
   }
 }
