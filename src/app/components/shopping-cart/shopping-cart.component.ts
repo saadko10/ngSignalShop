@@ -1,6 +1,6 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {CartItem} from "../../models/cart-item.model";
-import {Subscription} from "rxjs";
+import {Observable, of, Subscription} from "rxjs";
 import {CartState} from "../../services/cart.state";
 import {CartItemComponent} from "../cart-item/cart-item.component";
 import {CommonModule, CurrencyPipe} from "@angular/common";
@@ -19,7 +19,7 @@ import {CommonModule, CurrencyPipe} from "@angular/common";
     <h5 class="card-title mb-0">
       <i class="bi bi-cart3">
       <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-    {{totalItems}}
+    {{totalItems$ | async}}
   </span>
       </i> Panier
     </h5>
@@ -56,17 +56,18 @@ import {CommonModule, CurrencyPipe} from "@angular/common";
 export class ShoppingCartComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
   cartTotal: number = 0;
-  totalItems:number = 0;
+  totalItems$ : Observable<number> = of(0);
   private subscriptions = new Subscription();
 
   constructor(private cartState: CartState) {}
 
   ngOnInit(): void {
+
+    this.totalItems$ = this.cartState.getTotalItems$;
     // Subscribe to cart items updates
     this.subscriptions.add(
       this.cartState.items$.subscribe(items => {
         this.cartItems = items;
-        this.totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
       })
     );
 

@@ -13,12 +13,19 @@ export class CartState {
 
   // Observable for components to subscribe to cart updates
   readonly items$ = this.cartItems$.asObservable();
+//Observable of Total Items
+  getTotalItems$ = this.items$.pipe(
+    map(items => items.reduce((sum, item) => sum +  item.quantity, 0))
+  );
 
   // Computed observable for cart total
   readonly total$ = this.items$.pipe(
     map(items => items.reduce((sum, item) => sum + item.price * item.quantity, 0))
   );
 
+  readonly totalItems$ = this.items$.pipe(
+    map(items => items.reduce((sum, item) => sum + item.quantity, 0))
+  );
   // Method to add item to cart
   addToCart(product: Product): void {
     const currentItems = this.cartItems$.value;
