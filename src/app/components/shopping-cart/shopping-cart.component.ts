@@ -17,7 +17,11 @@ import {CommonModule, CurrencyPipe} from "@angular/common";
 <div class="card">
   <div class="card-header bg-primary text-white">
     <h5 class="card-title mb-0">
-      <i class="bi bi-cart3"></i> Panier
+      <i class="bi bi-cart3">
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+    {{totalItems}}
+  </span>
+      </i> Panier
     </h5>
   </div>
   <div class="card-body">
@@ -52,6 +56,7 @@ import {CommonModule, CurrencyPipe} from "@angular/common";
 export class ShoppingCartComponent implements OnInit, OnDestroy {
   cartItems: CartItem[] = [];
   cartTotal: number = 0;
+  totalItems:number = 0;
   private subscriptions = new Subscription();
 
   constructor(private cartState: CartState) {}
@@ -61,6 +66,7 @@ export class ShoppingCartComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.cartState.items$.subscribe(items => {
         this.cartItems = items;
+        this.totalItems = items.reduce((sum, item) => sum + item.quantity, 0)
       })
     );
 
