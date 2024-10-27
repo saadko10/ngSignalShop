@@ -1,10 +1,10 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, Output, SimpleChanges } from '@angular/core';
 import { Product } from '../../models/product.model';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 @Component({
-  selector: 'app-product-list',
+  selector: 'app-product-list [searchTerm]',
   standalone: true,
   imports: [FormsModule, CommonModule],
   template: `
@@ -15,12 +15,6 @@ import { CommonModule } from '@angular/common';
       <div class="card-body">
         <div class="mb-3">
           <!-- Two-way binding example for product filtering -->
-          <input
-            [(ngModel)]="searchTerm"
-            placeholder="Search products..."
-            (ngModelChange)="filterProducts()"
-          />
-        </div>
 
         <div class="row row-cols-1 row-cols-md-2 g-4">
           <div class="col" *ngFor="let product of filteredProducts">
@@ -48,7 +42,9 @@ import { CommonModule } from '@angular/common';
   `,
   styleUrl: './product-list.component.css',
 })
-export class ProductListComponent {
+export class ProductListComponent implements OnChanges{
+
+  @Input() searchTerm : string = '';
   // Available products
   products: Product[] = [
     { id: 1, name: 'Laptop', price: 999 },
@@ -59,8 +55,7 @@ export class ProductListComponent {
   // Filtered products array
   filteredProducts: Product[] = this.products;
 
-  // NgModel for search input
-  searchTerm: string = '';
+
 
   // Output event emitter for cart additions
   @Output() addToCart = new EventEmitter<Product>();
@@ -70,6 +65,12 @@ export class ProductListComponent {
   }
 
   filterProducts(): void {
+    this.filteredProducts = this.products.filter((product) =>
+      product.name.toLowerCase().includes(this.searchTerm.toLowerCase())
+    );
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
     this.filteredProducts = this.products.filter((product) =>
       product.name.toLowerCase().includes(this.searchTerm.toLowerCase())
     );

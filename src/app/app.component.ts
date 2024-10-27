@@ -4,11 +4,12 @@ import {CartState} from "./services/cart.state";
 import {Product} from "./models/product.model";
 import {ProductListComponent} from "./components/product-list/product-list.component";
 import {ShoppingCartComponent} from "./components/shopping-cart/shopping-cart.component";
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ProductListComponent, ShoppingCartComponent],
+  imports: [RouterOutlet, ProductListComponent, ShoppingCartComponent,FormsModule],
   template: `
         <div class="container-fluid">
       <nav class="navbar navbar-dark bg-primary mb-4">
@@ -22,7 +23,11 @@ import {ShoppingCartComponent} from "./components/shopping-cart/shopping-cart.co
       <div class="container">
         <div class="row">
           <div class="col-md-8">
-          <app-product-list
+          <input class="mb-3"
+            [(ngModel)]="searchTerm"
+            placeholder="Search products..."
+          />
+          <app-product-list [searchTerm]="searchTerm"
           (addToCart)="onAddToCart($event)">
         </app-product-list>
           </div>
@@ -36,6 +41,7 @@ import {ShoppingCartComponent} from "./components/shopping-cart/shopping-cart.co
 })
 export class AppComponent {
   title = 'signal-app';
+  searchTerm = '';
   constructor(private cartState: CartState) {}
 
   onAddToCart(product: Product): void {
