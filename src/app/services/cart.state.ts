@@ -56,7 +56,10 @@ export class CartState {
 
   // Method to remove item from cart
   removeItem(itemId: number): void {
-    // const filteredItems = this.cartItems$.value.filter(item => item.id !== itemId);
-    // this.cartItems$.next(filteredItems);
+    this.cartItems.update((currentItems) =>
+      currentItems.filter((item) =>
+        item.id !== itemId
+      )
+    );
   }
 }
