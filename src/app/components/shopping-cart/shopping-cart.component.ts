@@ -3,31 +3,49 @@ import {CartItem} from "../../models/cart-item.model";
 import {Subscription} from "rxjs";
 import {CartState} from "../../services/cart.state";
 import {CartItemComponent} from "../cart-item/cart-item.component";
-import {CommonModule} from "@angular/common";
+import {CommonModule, CurrencyPipe} from "@angular/common";
 
 @Component({
   selector: 'app-shopping-cart',
   standalone: true,
   imports: [
     CartItemComponent,
-    CommonModule
+    CommonModule,
+    CurrencyPipe
   ],
   template: `
-    <div class="cart">
-      <h2>Shopping Cart</h2>
-      <ng-container *ngIf="cartItems.length; else emptyCart">
+<div class="card">
+  <div class="card-header bg-primary text-white">
+    <h5 class="card-title mb-0">
+      <i class="bi bi-cart3"></i> Panier
+    </h5>
+  </div>
+  <div class="card-body">
+    <ng-container *ngIf="cartItems.length; else emptyCart">
+      <div class="list-group list-group-flush">
         <app-cart-item
           *ngFor="let item of cartItems"
           [item]="item"
           (quantityChange)="onQuantityChange($event)"
           (remove)="onRemoveItem($event)">
         </app-cart-item>
-        <div class="total">Total: {{ cartTotal }}</div>
-      </ng-container>
-      <ng-template #emptyCart>
-        <p>Your cart is empty</p>
-      </ng-template>
-    </div>
+      </div>
+      <div class="mt-3 text-end">
+        <h5>Total: {{ cartTotal | currency:'EUR' }}</h5>
+      </div>
+      <button class="btn btn-success w-100 mt-3">
+        <i class="bi bi-credit-card"></i> Commander
+      </button>
+    </ng-container>
+
+    <ng-template #emptyCart>
+      <div class="text-center py-4">
+        <i class="bi bi-cart-x fs-1 text-muted"></i>
+        <p class="text-muted mt-2">Votre panier est vide</p>
+      </div>
+    </ng-template>
+  </div>
+</div>
   `,
   styleUrl: './shopping-cart.component.css'
 })
