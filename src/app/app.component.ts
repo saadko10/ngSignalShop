@@ -27,8 +27,9 @@ import { FormsModule } from '@angular/forms';
             [(ngModel)]="searchTerm"
             placeholder="Search products..."
           />
-          <app-product-list [searchTerm]="searchTerm"
-          (addToCart)="onAddToCart($event)">
+          <app-product-list [listCriteria]="searchTerm"
+           (addToCart)="onAddToCart($event)"
+          >
         </app-product-list>
           </div>
           <div class="col-md-4">
