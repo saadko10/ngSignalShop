@@ -1,4 +1,4 @@
-import { Component, EventEmitter, input, Input, Output } from '@angular/core';
+import { Component, EventEmitter, input, Input, output, Output } from '@angular/core';
 import { CartItem } from "../../models/cart-item.model";
 import { FormsModule } from "@angular/forms";
 import { CommonModule } from "@angular/common";
@@ -32,9 +32,11 @@ import { CommonModule } from "@angular/common";
 })
 export class CartItemComponent {
    item = input.required<CartItem>();
-  @Output() quantityChange = new EventEmitter<{ id: number, quantity: number }>();
-  @Output() remove = new EventEmitter<number>();
 
+   quantityChange = output<{ id: number, quantity: number }>()
+   remove = output<number>();
+   // @Output() remove = new EventEmitter<number>();
+  // @Output() quantityChange = new EventEmitter<{ id: number, quantity: number }>();
   onQuantityChange(quantity: number): void {
     this.quantityChange.emit({ id: this.item().id, quantity });
   }
@@ -42,4 +44,5 @@ export class CartItemComponent {
   onRemove(): void {
     this.remove.emit(this.item().id);
   }
+
 }

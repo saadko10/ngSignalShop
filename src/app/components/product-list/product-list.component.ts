@@ -6,6 +6,7 @@ import {
   input,
   Input,
   OnChanges,
+  output,
   Output,
   signal,
   SimpleChanges,
@@ -80,7 +81,8 @@ constructor(){
   filteredProducts = computed(() => this.products().filter((product) => product.name.toLocaleLowerCase().includes(this.searchTerm())));
 
   // Output event emitter for cart additions
-  @Output() addToCart = new EventEmitter<Product>();
+  addToCart = output<Product>();
+  // @Output() addToCart = new EventEmitter<Product>();
 
   onAddToCart(product: Product): void {
     this.addToCart.emit(product);
