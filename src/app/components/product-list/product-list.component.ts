@@ -87,4 +87,7 @@ constructor(){
   onAddToCart(product: Product): void {
     this.addToCart.emit(product);
   }
+
+  // TODO use effect and menion its drawbacks while using it as signal on other computes
+  // then solve it by untracked function
 }
